@@ -1,0 +1,942 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Remann Mafia</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap">
+
+<style>
+/* Layout: full-bleed abyssal canvas, 1440px content, cinematic section rhythm — single dark world */
+:root {
+  --abyss:   #012624;
+  --deep:    #011d1c;
+  --kelp:    #003734;
+  --mist:    #edfffe;
+  --white:   #ffffff;
+  --silver:  #bbc7c6;
+  --slate:   #707777;
+  --phosphor:#fde9ff;
+  --grad-aurora: linear-gradient(90deg, rgb(203,255,252) 0%, rgb(237,255,254) 26.25%, rgb(255,253,250) 47.57%, rgb(250,209,255) 88.96%);
+  --font: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --r-sm: 6px;
+  --r-lg: 16px;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--abyss);
+  color: var(--silver);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* safe-area inset band behind status bar */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--abyss);
+  z-index: 200;
+}
+
+/* ─── NAV ─────────────────────────────────────── */
+.nav {
+  position: fixed;
+  top: env(safe-area-inset-top, 0px);
+  left: 0; right: 0;
+  height: 72px;
+  z-index: 100;
+  transition: background 0.35s, backdrop-filter 0.35s;
+}
+.nav.scrolled {
+  background: rgba(1, 38, 36, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.nav-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  height: 100%;
+  padding-left:  max(32px, env(safe-area-inset-left, 0px));
+  padding-right: max(32px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.nav-logo {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--silver);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-links a:focus-visible { outline: 1px solid var(--mist); outline-offset: 4px; border-radius: 2px; }
+
+.btn-nav {
+  background: var(--grad-aurora);
+  color: #1a1a1a;
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 9px 18px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+.btn-nav:hover { opacity: 0.85; }
+.btn-nav:focus-visible { outline: 1px solid var(--mist); outline-offset: 3px; }
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 6px;
+  flex-shrink: 0;
+}
+.hamburger span {
+  display: block;
+  width: 20px; height: 1.5px;
+  background: var(--white);
+  transition: transform 0.2s, opacity 0.2s;
+}
+.hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+.nav-drawer {
+  display: none;
+  position: fixed;
+  top: calc(72px + env(safe-area-inset-top, 0px));
+  left: 0; right: 0;
+  background: rgba(1, 29, 28, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 99;
+  padding: 32px max(32px, env(safe-area-inset-left, 0px));
+  padding-right: max(32px, env(safe-area-inset-right, 0px));
+  flex-direction: column;
+  gap: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.nav-drawer.open { display: flex; }
+.nav-drawer a {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--silver);
+  text-decoration: none;
+}
+
+/* ─── HERO ───────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 680px;
+  padding-left:  max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 128px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--silver);
+}
+.hero-h1 {
+  font-size: clamp(2.6rem, 7vw, 5rem);
+  font-weight: 500;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  text-wrap: balance;
+}
+.hero-h1 em {
+  font-style: normal;
+  background: var(--grad-aurora);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--silver);
+  max-width: 460px;
+}
+.btn-cta {
+  background: var(--grad-aurora);
+  color: #1a1a1a;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 14px 28px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 4px;
+  transition: opacity 0.2s;
+}
+.btn-cta:hover { opacity: 0.85; }
+.btn-cta:focus-visible { outline: 1px solid var(--mist); outline-offset: 3px; }
+
+/* ─── STATS ──────────────────────────────────── */
+.stats { padding-block: 80px; }
+.section-wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-left:  max(32px, env(safe-area-inset-left, 0px));
+  padding-right: max(32px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: rgba(255,255,255,0.05);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.stat-item {
+  background: var(--kelp);
+  padding: 48px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.stat-num {
+  font-size: clamp(2.4rem, 4.5vw, 4rem);
+  font-weight: 500;
+  line-height: 1.0;
+  letter-spacing: -0.04em;
+  color: var(--phosphor);
+  font-variant-numeric: tabular-nums;
+}
+.stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+/* ─── CASE STUDY ─────────────────────────────── */
+.cases { padding-block: 80px; }
+.cases-label { margin-bottom: 36px; }
+.cases-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.case-card {
+  background: var(--kelp);
+  border-radius: var(--r-lg);
+  padding: 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.case-tag {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--mist);
+  margin-bottom: 16px;
+  display: block;
+}
+.case-title {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+.case-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--silver);
+}
+.case-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.case-metric {
+  background: rgba(1,29,28,0.5);
+  border-radius: var(--r-sm);
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.case-metric-num {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--phosphor);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.case-metric-label {
+  font-size: 12px;
+  color: var(--silver);
+  line-height: 1.4;
+  text-align: right;
+}
+.case-footer {
+  margin-top: 20px;
+}
+.btn-case {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mist);
+  text-decoration: none;
+  border: 1px solid rgba(237,255,254,0.2);
+  border-radius: var(--r-sm);
+  padding: 9px 16px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-case:hover { border-color: rgba(237,255,254,0.5); color: var(--white); }
+@media (max-width: 860px) {
+  .case-card { grid-template-columns: 1fr; gap: 32px; padding: 32px 24px; }
+  .case-title { font-size: 24px; }
+}
+
+/* ─── SERVICES ───────────────────────────────── */
+.services { padding-block: 80px; }
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--silver);
+  margin-bottom: 36px;
+}
+.service-list {
+  display: flex;
+  flex-direction: column;
+}
+.service-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  transition: background 0.2s;
+  border-radius: 0;
+}
+.service-card:first-child { padding-top: 0; }
+.service-card:last-child { border-bottom: none; }
+.service-info { flex: 1; min-width: 0; }
+.service-title {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+.service-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--silver);
+  margin-bottom: 14px;
+}
+.service-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.service-tag {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mist);
+  background: rgba(237,255,254,0.07);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+.arrow-btn {
+  width: 32px; height: 32px;
+  min-width: 32px;
+  border-radius: var(--r-sm);
+  background: rgba(3, 81, 75, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: background 0.2s;
+}
+.service-card:hover .arrow-btn { background: rgba(3, 81, 75, 0.85); }
+
+.molecule-col {
+  position: sticky;
+  top: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.molecule-wrap {
+  width: 100%;
+  max-width: 380px;
+  opacity: 0.55;
+}
+
+/* ─── CTA PANEL ──────────────────────────────── */
+.cta-section { padding-block: 80px; }
+.cta-card {
+  background: var(--deep);
+  border-radius: var(--r-lg);
+  padding: 96px 48px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.cta-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--silver);
+}
+.cta-heading {
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.cta-sub {
+  font-size: 15px;
+  color: var(--silver);
+  max-width: 420px;
+  line-height: 1.6;
+}
+.cta-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+.cta-or {
+  font-size: 12px;
+  color: var(--slate);
+  letter-spacing: 0.05em;
+}
+.cta-email {
+  font-size: 14px;
+  color: var(--silver);
+  user-select: all;
+  cursor: text;
+  letter-spacing: 0.01em;
+}
+
+/* ─── FOOTER ─────────────────────────────────── */
+footer {
+  background: var(--deep);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.footer-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-left:  max(32px, env(safe-area-inset-left, 0px));
+  padding-right: max(32px, env(safe-area-inset-right, 0px));
+  padding-block: 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.footer-name {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.footer-tag {
+  font-size: 12px;
+  color: var(--slate);
+  margin-top: 6px;
+}
+.footer-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+.footer-email {
+  font-size: 13px;
+  color: var(--silver);
+  user-select: all;
+  cursor: text;
+}
+.footer-copy {
+  font-size: 11px;
+  color: var(--slate);
+  letter-spacing: 0.03em;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 860px) {
+  .nav-links, .nav-links ~ .btn-nav { display: none; }
+  .hamburger { display: flex; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .stat-item { padding: 32px 24px; }
+  .services-grid { grid-template-columns: 1fr; }
+  .molecule-col { display: none; }
+  .cta-card { padding: 56px 24px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+  .footer-right { text-align: left; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">Remann Mafia</a>
+    <ul class="nav-links">
+      <li><a href="#services">Serviços</a></li>
+      <li><a href="#cases">Cases</a></li>
+      <li><a href="#contact">Contato</a></li>
+    </ul>
+    <a href="#contact" class="btn-nav">Fala Comigo</a>
+    <button class="hamburger" id="hamburger" aria-expanded="false" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="nav-drawer" id="drawer" role="navigation" aria-label="Menu mobile">
+  <a href="#services" onclick="closeDrawer()">Serviços</a>
+  <a href="#cases"    onclick="closeDrawer()">Cases</a>
+  <a href="#contact"  onclick="closeDrawer()">Contato</a>
+  <a href="#contact"  onclick="closeDrawer()" class="btn-cta" style="text-align:center;margin-top:4px">Fala Comigo</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" aria-label="Hero">
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+  <div class="hero-content">
+    <span class="eyebrow">Growth Marketing para Criadores</span>
+    <h1 class="hero-h1">Crescimento <em>medido,</em> não chutado.</h1>
+    <p class="hero-sub">Funil de comunidade, cortes estratégicos e dashboard de métricas em tempo real — para criadores que levam o canal a sério.</p>
+    <a href="#contact" class="btn-cta">Fala Comigo</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats" id="results" aria-label="Metodologia">
+  <div class="section-wrap">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-num">4 fases</span>
+        <span class="stat-label">Do briefing à escala</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">48h</span>
+        <span class="stat-label">Ciclos de entrega</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">0</span>
+        <span class="stat-label">Achismos na estratégia</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services" aria-label="Serviços">
+  <div class="section-wrap">
+    <div class="services-grid">
+      <div>
+        <p class="section-label">O que eu entrego</p>
+        <div class="service-list">
+
+          <article class="service-card">
+            <div class="service-info">
+              <h3 class="service-title">Growth Marketing</h3>
+              <p class="service-desc">Cortes, funil de comunidade e dashboard de métricas semanais. Você acompanha o crescimento em tempo real e sabe exatamente o que está funcionando.</p>
+              <div class="service-tags">
+                <span class="service-tag">Cortes estratégicos</span>
+                <span class="service-tag">Funil de comunidade</span>
+                <span class="service-tag">Relatório semanal</span>
+                <span class="service-tag">Retenção de audiência</span>
+              </div>
+            </div>
+            <div class="arrow-btn" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 11L11 2M11 2H5M11 2V8" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+
+          <article class="service-card">
+            <div class="service-info">
+              <h3 class="service-title">Estratégia de Conteúdo</h3>
+              <p class="service-desc">Mapeamento do canal, identificação do que trava o crescimento e plano de ação com métricas claras — antes de qualquer execução.</p>
+              <div class="service-tags">
+                <span class="service-tag">Diagnóstico de canal</span>
+                <span class="service-tag">Calendário editorial</span>
+                <span class="service-tag">Posicionamento de marca</span>
+                <span class="service-tag">Tom de voz</span>
+              </div>
+            </div>
+            <div class="arrow-btn" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 11L11 2M11 2H5M11 2V8" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+
+          <article class="service-card">
+            <div class="service-info">
+              <h3 class="service-title">Analytics & Dashboard</h3>
+              <p class="service-desc">Dashboard aberto e acompanhamento contínuo — sem relatório mensal engessado. Você vê os números e decide com dados.</p>
+              <div class="service-tags">
+                <span class="service-tag">Dashboard em tempo real</span>
+                <span class="service-tag">Métricas de conversão</span>
+                <span class="service-tag">Análise de funil</span>
+                <span class="service-tag">Decisões com dados</span>
+              </div>
+            </div>
+            <div class="arrow-btn" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 11L11 2M11 2H5M11 2V8" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <div class="molecule-col" aria-hidden="true">
+        <svg class="molecule-wrap" viewBox="0 0 400 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- connector lines first (behind nodes) -->
+          <line x1="200" y1="70"  x2="140" y2="140" stroke="#bbc7c6" stroke-width="0.75" stroke-opacity="0.45"/>
+          <line x1="200" y1="70"  x2="260" y2="140" stroke="#bbc7c6" stroke-width="0.75" stroke-opacity="0.45"/>
+          <line x1="140" y1="140" x2="70"  y2="200" stroke="#bbc7c6" stroke-width="0.75" stroke-opacity="0.45"/>
+          <line x1="260" y1="140" x2="330" y2="200" stroke="#bbc7c6" stroke-width="0.75" stroke-opacity="0.45"/>
+          <line x1="70"  y1="200" x2="130" y2="310" stroke="#bbc7c6" stroke-width="0.75" stroke-opacity="0.45"/>
+          <line x1="330" y1="200" x2="270" y2="310" stroke="#bbc7c6" stroke-width="0.75" stroke-opacity="0.45"/>
+          <line x1="130" y1="310" x2="200" y2="370" stroke="#bbc7c6" stroke-width="0.75" stroke-opacity="0.3"/>
+          <line x1="270" y1="310" x2="200" y2="370" stroke="#bbc7c6" stroke-width="0.75" stroke-opacity="0.3"/>
+          <line x1="70"  y1="200" x2="330" y2="200" stroke="#bbc7c6" stroke-width="0.5"  stroke-opacity="0.2"/>
+          <!-- center connections -->
+          <line x1="200" y1="210" x2="140" y2="140" stroke="#edfffe" stroke-width="0.75" stroke-opacity="0.35"/>
+          <line x1="200" y1="210" x2="260" y2="140" stroke="#edfffe" stroke-width="0.75" stroke-opacity="0.35"/>
+          <line x1="200" y1="210" x2="70"  y2="200" stroke="#edfffe" stroke-width="0.75" stroke-opacity="0.35"/>
+          <line x1="200" y1="210" x2="330" y2="200" stroke="#edfffe" stroke-width="0.75" stroke-opacity="0.35"/>
+          <line x1="200" y1="210" x2="130" y2="310" stroke="#edfffe" stroke-width="0.75" stroke-opacity="0.35"/>
+          <line x1="200" y1="210" x2="270" y2="310" stroke="#edfffe" stroke-width="0.75" stroke-opacity="0.35"/>
+          <!-- outer nodes -->
+          <circle cx="200" cy="70"  r="7" stroke="#bbc7c6" stroke-width="1.5"/>
+          <circle cx="140" cy="140" r="5" stroke="#bbc7c6" stroke-width="1.5"/>
+          <circle cx="260" cy="140" r="5" stroke="#bbc7c6" stroke-width="1.5"/>
+          <circle cx="70"  cy="200" r="7" stroke="#bbc7c6" stroke-width="1.5"/>
+          <circle cx="330" cy="200" r="7" stroke="#bbc7c6" stroke-width="1.5"/>
+          <circle cx="130" cy="310" r="5" stroke="#bbc7c6" stroke-width="1.5"/>
+          <circle cx="270" cy="310" r="5" stroke="#bbc7c6" stroke-width="1.5"/>
+          <circle cx="200" cy="370" r="4" stroke="#707777" stroke-width="1"/>
+          <!-- center node -->
+          <circle cx="200" cy="210" r="11" stroke="#edfffe" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDY -->
+<section class="cases" id="cases" aria-label="Cases">
+  <div class="section-wrap">
+    <p class="section-label cases-label">Cases</p>
+    <div class="cases-grid">
+    <div class="case-card">
+      <div>
+        <span class="case-tag">E-commerce · Criador de Conteúdo</span>
+        <h3 class="case-title">PH Martins 7</h3>
+        <p class="case-desc">Loja própria integrada à identidade do criador — produtos, loja e funil de vendas construídos do zero. Estratégia de growth aplicada desde o lançamento: posicionamento de marca, funil de comunidade e acompanhamento de métricas de conversão em tempo real.</p>
+        <div class="case-footer">
+          <a href="https://www.lojaphmartins7.com.br/conta" target="_blank" rel="noopener" class="btn-case">Visitar loja ↗</a>
+        </div>
+      </div>
+      <div class="case-metrics">
+        <div class="case-metric">
+          <span class="case-metric-num">< 1s</span>
+          <span class="case-metric-label">Tempo de carregamento da loja</span>
+        </div>
+        <div class="case-metric">
+          <span class="case-metric-num">Twitch</span>
+          <span class="case-metric-label">Canal principal integrado à loja</span>
+        </div>
+        <div class="case-metric">
+          <span class="case-metric-num">Real-time</span>
+          <span class="case-metric-label">Dashboard de métricas de vendas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="case-card">
+      <div>
+        <span class="case-tag">Estúdio · Identidade & Growth</span>
+        <h3 class="case-title">Gelinho Studio</h3>
+        <p class="case-desc">Estúdio de criação para criadores de conteúdo — sites, brand kits e growth marketing integrados em ciclos curtos. Operação e estratégia de crescimento do estúdio desde o início: posicionamento, aquisição de clientes e funil de comunidade para uma base de criadores na Twitch, YouTube e Kick.</p>
+        <div class="case-footer">
+          <a href="https://www.gelinhostudio.com.br" target="_blank" rel="noopener" class="btn-case">Ver estúdio ↗</a>
+        </div>
+      </div>
+      <div class="case-metrics">
+        <div class="case-metric">
+          <span class="case-metric-num">3</span>
+          <span class="case-metric-label">Serviços entregues: sites, brand kit e growth</span>
+        </div>
+        <div class="case-metric">
+          <span class="case-metric-num">< 2 sem.</span>
+          <span class="case-metric-label">Da conversa ao ar — sem enrolação</span>
+        </div>
+        <div class="case-metric">
+          <span class="case-metric-num">Contínuo</span>
+          <span class="case-metric-label">Acompanhamento de escala e métricas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="case-card">
+      <div>
+        <span class="case-tag">Redes Sociais · Criador de Conteúdo</span>
+        <h3 class="case-title">Vitor André</h3>
+        <p class="case-desc">Comediante, skatista e dublador — conhecido como Super Choque Carioca. Após o pico viral das redublagens em 2020, trabalhamos o reposicionamento e crescimento do perfil no nicho de skate, humor e dublagem profissional. Presença ampliada no Instagram, TikTok, YouTube Shorts e X.</p>
+        <div class="case-footer">
+          <a href="https://www.instagram.com/ovitorandre/" target="_blank" rel="noopener" class="btn-case">Ver no Instagram ↗</a>
+        </div>
+      </div>
+      <div class="case-metrics">
+        <div class="case-metric">
+          <span class="case-metric-num">4+</span>
+          <span class="case-metric-label">Plataformas com crescimento orgânico</span>
+        </div>
+        <div class="case-metric">
+          <span class="case-metric-num">Nicho</span>
+          <span class="case-metric-label">Reposicionamento pós-viralização</span>
+        </div>
+        <div class="case-metric">
+          <span class="case-metric-num">↑</span>
+          <span class="case-metric-label">Engajamento em skate, humor e dublagem</span>
+        </div>
+      </div>
+    </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA PANEL -->
+<section class="cta-section" id="contact" aria-label="Contato">
+  <div class="section-wrap">
+    <div class="cta-card">
+      <span class="cta-eyebrow">Pronto para Crescer</span>
+      <h2 class="cta-heading">Vamos construir seu motor de crescimento.</h2>
+      <p class="cta-sub">Da imersão à escala — para criadores sérios sobre crescer com estratégia, não com achismo.</p>
+      <div class="cta-contact">
+        <a href="#contact" class="btn-cta">Fala Comigo</a>
+        <span class="cta-or">ou me chama diretamente</span>
+        <span class="cta-email">contato@remannmafia.com.br</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-name">Remann Mafia</div>
+      <div class="footer-tag">Growth Marketing · Estratégia · Analytics</div>
+    </div>
+    <div class="footer-right">
+      <span class="footer-email">contato@remannmafia.com.br</span>
+      <span class="footer-copy">© 2025 Remann Mafia. Todos os direitos reservados.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Nav scroll
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 10);
+}, { passive: true });
+
+// Mobile drawer
+const hamburger = document.getElementById('hamburger');
+const drawer = document.getElementById('drawer');
+hamburger.addEventListener('click', () => {
+  const open = drawer.classList.toggle('open');
+  hamburger.setAttribute('aria-expanded', open);
+});
+function closeDrawer() {
+  drawer.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', 'false');
+}
+
+// Particle Sphere — Fibonacci sphere + Y-axis rotation
+(function () {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W, H, cx, cy, R, angle = 0;
+
+  // Fibonacci sphere point distribution
+  const N = 480;
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  const pts = Array.from({ length: N }, (_, i) => {
+    const y = 1 - (i / (N - 1)) * 2;
+    const r = Math.sqrt(1 - y * y);
+    const t = golden * i;
+    return { x: Math.cos(t) * r, y, z: Math.sin(t) * r };
+  });
+
+  function resize() {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width  = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    cx = W / 2; cy = H / 2;
+    R = Math.min(W, H) * 0.28;
+  }
+  window.addEventListener('resize', () => { ctx.setTransform(1,0,0,1,0,0); resize(); }, { passive: true });
+  resize();
+
+  // slight X-axis tilt constants
+  const TILT = 0.25;
+  const cosT = Math.cos(TILT), sinT = Math.sin(TILT);
+
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+
+    const cosA = Math.cos(angle), sinA = Math.sin(angle);
+
+    const projected = pts.map(p => {
+      // Y rotation
+      const rx = p.x * cosA - p.z * sinA;
+      const ry = p.y;
+      const rz = p.x * sinA + p.z * cosA;
+      // X tilt
+      const ry2 = ry * cosT - rz * sinT;
+      const rz2 = ry * sinT + rz * cosT;
+      const persp = 500 / (500 + rz2 * R);
+      return { px: cx + rx * R * persp, py: cy + ry2 * R * persp, depth: rz2 };
+    });
+
+    projected.sort((a, b) => a.depth - b.depth);
+
+    projected.forEach(({ px, py, depth }) => {
+      const t = (depth + 1) / 2;          // 0 = far, 1 = near
+      const alpha = 0.12 + t * 0.65;
+      const size  = 0.5 + t * 1.6;
+
+      let r, g, b;
+      if (t > 0.72) {
+        r = 253; g = 233; b = 255;        // phosphor (near)
+      } else if (t > 0.38) {
+        r = 203; g = 255; b = 252;        // aqua (mid)
+      } else {
+        r = 0;   g = 110; b = 104;        // deep teal (far)
+      }
+
+      ctx.beginPath();
+      ctx.arc(px, py, Math.max(0.4, size), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+      ctx.fill();
+    });
+
+    if (!prefersReduced) angle += 0.0025;
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+
+</body></html>
